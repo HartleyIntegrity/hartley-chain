@@ -1,0 +1,72 @@
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/example.com/msp
+        AdminPrincipal: Role.ADMIN
+
+    - &Org1
+        Name: Org1MSP
+        ID: Org1MSP
+        MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
+        AnchorPeers:
+            - Host: peer0.org1.example.com
+              Port: 7051
+
+Application: &ApplicationDefaults
+Organizations:
+
+Orderer: &OrdererDefaults
+OrdererType: etcdraft
+Addresses:
+- orderer.example.com:7050
+BatchTimeout: 2s
+BatchSize:
+MaxMessageCount: 10
+AbsoluteMaxBytes: 99 MB
+PreferredMaxBytes: 512 KB
+EtcdRaft:
+Consenters:
+- Host: orderer.example.com
+Port: 7050
+ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+Organizations:
+
+Channel: &ChannelDefaults
+Policies:
+Readers:
+Type: ImplicitMeta
+Rule: "ANY Readers"
+Writers:
+Type: ImplicitMeta
+Rule: "ANY Writers"
+Admins:
+Type: ImplicitMeta
+Rule: "MAJORITY Admins"
+Capabilities:
+V1_4_2: true
+V1_3: false
+V1_1: false
+
+Profiles:
+HartleyChannel:
+Consortium: AWSSystemConsortium
+<<: *ChannelDefaults
+Application:
+<<: *ApplicationDefaults
+Organizations:
+- *Org1
+Capabilities:
+V1_4_2: true
+
+OrgsChannel:
+    Consortium: AWSSystemConsortium
+    <<: *ChannelDefaults
+    Application:
+        <<: *ApplicationDefaults
+        Organizations:
+            - *OrdererOrg
+            - *Org1
+    Capabilities:
+        V1_4_2: true
