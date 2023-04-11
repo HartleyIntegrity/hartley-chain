@@ -1,0 +1,62 @@
+peer:
+  id: peer0.org1.example.com
+  networkId: dev
+  address: peer0.org1.example.com:7051
+  listenAddress: 0.0.0.0:7051
+  chaincodeListenAddress: 0.0.0.0:7052
+  clientAddress: 0.0.0.0:7051
+  tls:
+    enabled: false
+    cert:
+      file:
+      client:
+        cert:
+          file:
+        key:
+          file:
+    rootcert:
+      file:
+
+  gossip:
+    bootstrap: peer0.org1.example.com:7051
+    externalEndpoint: peer0.org1.example.com:7051
+    useLeaderElection: true
+    orgLeader: false
+    endpoint:
+      gossip://peer0.org1.example.com:7051
+
+  localMspId: Org1MSP
+  mspConfigPath: /etc/hyperledger/msp/peer/
+  chaincode:
+    id:
+      path:
+
+    system:
+      cscc:
+        enabled: true
+        name: cscc
+      lscc:
+        enabled: true
+        name: lscc
+      escc:
+        enabled: true
+        name: escc
+      vscc:
+        enabled: true
+        name: vscc
+
+  deliveryclient:
+    reconnectTotalTimeThreshold: 3600s
+    connTimeout: 0s
+    addressOverride:
+    reconnectBackoffThreshold: 0s
+    type: DeliverClient
+    reconnectBackoffMax: 10s
+    maxRecvMsgSize: 10485760
+    reConnectBackoffFactor: 2.0
+    maxSendMsgSize: 10485760
+    sendTimeout: 0s
+    connIdleTime: 7200s
+    poolSize: 1
+    peerAddress: peer0.org1.example.com:7051
+    tlsEnabled: false
