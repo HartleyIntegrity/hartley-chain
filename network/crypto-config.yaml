@@ -1,0 +1,18 @@
+OrdererOrgs:
+  - Name: Orderer
+    Domain: hartley.com
+    Specs:
+      - Hostname: orderer
+PeerOrgs:
+  - Name: Org1
+    Domain: org1.hartley.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Org2
+    Domain: org2.hartley.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1

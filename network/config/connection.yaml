@@ -1,0 +1,65 @@
+name: HartleyNetwork
+version: 1.0
+client:
+  organization: HartleyMSP
+  connection:
+    timeout:
+      peer:
+        endorser: 300
+      orderer: 300
+  logging:
+    level: debug
+channels:
+  mychannel:
+    orderers:
+      - orderer.hartley.com
+    peers:
+      peer0.org1.hartley.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+organizations:
+  Org1:
+    mspid: HartleyMSP
+    peers:
+      - peer0.org1.hartley.com
+    certificateAuthorities:
+      - ca.hartley.com
+  Org2:
+    mspid: Org2MSP
+    peers:
+      - peer0.org2.hartley.com
+    certificateAuthorities:
+      - ca-org2.hartley.com
+orderers:
+  orderer.hartley.com:
+    url: grpc://localhost:7050
+peers:
+  peer0.org1.hartley.com:
+    url: grpc://localhost:7051
+    eventUrl: grpc://localhost:7053
+  peer0.org2.hartley.com:
+    url: grpc://localhost:9051
+    eventUrl: grpc://localhost:9053
+certificateAuthorities:
+  ca.hartley.com:
+    url: http://localhost:7054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /path/to/crypto-config/peerOrganizations/org1.hartley.com/ca/ca.hartley.com-cert.pem
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+    caName: ca.hartley.com
+  ca-org2.hartley.com:
+    url: http://localhost:8054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /path/to/crypto-config/peerOrganizations/org2.hartley.com/ca/ca-org2.hartley.com-cert.pem
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+    caName: ca-org2.hartley.com

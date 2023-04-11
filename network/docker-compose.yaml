@@ -1,0 +1,73 @@
+version: "2"
+
+services:
+  orderer.hartley.com:
+    container_name: orderer.hartley.com
+    image: hyperledger/fabric-orderer:2.2
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/genesis.block:ro
+      - ./crypto-config/ordererOrganizations/hartley.com/orderers/orderer.hartley.com/msp:/var/hyperledger/orderer/msp:ro
+    networks:
+      - hartley_net
+
+  peer0.org1.hartley.com:
+    container_name: peer0.org1.hartley.com
+    image: hyperledger/fabric-peer:2.2
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ADDRESS=peer0.org1.hartley.com:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.hartley.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.hartley.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.hartley.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network_default
+      - CORE_PEER_TLS_ENABLED=false
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/org1.hartley.com/peers/peer0.org1.hartley.com/msp:/etc/hyperledger/fabric/msp
+    ports:
+      - 7051:7051
+      - 7053:7053
+    networks:
+      - hartley_net
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:2.2
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_ADDRESS=peer0.org1.hartley.com:7051
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.hartley.com/users/Admin@org1.hartley.com/msp
+      - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+      - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    networks:
+      - hartley_net
+
+networks:
+  hartley_net:
+    driver: bridge
+
+
